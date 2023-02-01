@@ -13,3 +13,4 @@ module.exports = {
         idle: 10000
     }
 }
+console.log("Testing DB")
