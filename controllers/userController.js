@@ -1,18 +1,18 @@
 const db = require('../models')
 const bcrypt = require('bcrypt')
-const sequelize  = require('../models/index')
+const { sequelize }  = require('../models/index')
 const User = db.users
 
 // POST route to add a new user to database
 const addUser = async (req, res) => {
     // checks if request body exists, if not returns a bad request
     if(Object.keys(req.body).length === 0){
-        return res.status(400).send('Bad request')
+        return res.status(400).send('Bad request') // request body is empty
     }
 
     // if any of the required fields are empty, return a bad request
-    if(req.body.first_name == null || req.body.last_name == null || req.body.username == null || req.body.password == null){
-        return res.status(400).send('Bad request')
+    if(!req.body.first_name || !req.body.last_name || !req.body.username || !req.body.password){
+        return res.status(400).send('Bad request') // required fields are missing
     }
 
     // retrieves attribute values from request body
@@ -47,39 +47,37 @@ const addUser = async (req, res) => {
 
         // finds newly created user to fetch info
         let response = await User.findOne({where: { username: username },
-            attributes: { exclude: [ 'password', 'createdAt', 'updatedAt' ]}})     
+            attributes: { exclude: [ 'password' ]}})     
         return res.status(201).send(response)
     }
 
     // if above checks fail, a bad request is returned
-    return res.status(400).send('Bad request') //Username does not match with the database username
+    return res.status(400).send('Bad request')
 }
 
 // GET route to retrieve user details
 const getUser = async (req, res) => {
     // checks for authorization header
     if(!req.get('Authorization')){
-        return res.status(401).send('Unauthorized') //Username or password in missing
+        return res.status(401).send('Unauthorized')
     }
+
     // authorization check
-    const authenticated = await authenticate(req)
+    const authenticated = await authenticate(req, res)
     if(authenticated == true){
         // retrieve user details on successful authentication
         let user = await User.findOne({where: { id: req.params.id },
-            attributes: { exclude: [ 'password', 'createdAt', 'updatedAt' ]}})
+            attributes: { exclude: [ 'password' ]}})
         if(user != null){
             return res.status(200).send(user)
         }
-        // user does not exist
-        return res.status(403).send('Forbidden') //Username is not present
     }
-    return res.status(403).send('Forbidden') //Username and password do not match
 }
 
 // PUT route to update user details
 const updateUser = async (req, res) => {
     if(!req.body.first_name || !req.body.last_name || !req.body.password){
-        return res.status(400).json("Bad Request")
+        return res.status(400).send('Bad request')
     }
     
     if(!req.get('Authorization')){
@@ -89,52 +87,65 @@ const updateUser = async (req, res) => {
     // attempt to update any other field should return 400 Bad Request HTTP response code
     if(!req.body.username && !req.body.account_created && !req.body.account_updated)
     {
-        const authenticated = await authenticate(req)
+        // checks if user is authenticated (valid credentials)
+        const authenticated = await authenticate(req, res)
         if(authenticated == true){
+            // gets password passed
             var password = req.body.password
             // hash the user password with a salt value of 10
-                const hash = await bcrypt.hash(password, 10)
+            const hash = await bcrypt.hash(password, 10)
 
             // update user
             const user = await User.update({first_name: req.body.first_name, last_name: req.body.last_name, password: hash, account_updated: new Date().toJSON()}, {where: { id: req.params.id }})
+            // if details updated successfully
             if(user == 1){
                 return res.status(204).send(user)
             }
-                return res.status(400).send('Bad request')
+            return res.status(400).send('Bad request')
         }
-            return res.status(403).send('Forbidden')
     }
-    return res.status(400).send('Bad request')
+    else{
+        return res.status(400).send('Bad request')
+    }
 }
 
 // function to authenticate a user
-async function authenticate (req) {
+async function authenticate (req, res) {
     // decodes authorization header to fetch username and password
     var credentials = Buffer.from(req.get('Authorization').split(' ')[1], 'base64').toString().split(':')
     var username = credentials[0]
     var password = credentials[1]
 
-    // finding the user with specified username
-    let user = await User.findOne({where: { username: username }})
+    // finding the user with specified id
+    let actualUser = await User.findOne({where: { id: req.params.id }})
+    let givenUser = await User.findOne({where: { username: username }})
 
-    //compares user id passed to that of user id found via username passed
-    if(user != null && user.id == req.params.id){
+    if(givenUser && actualUser){
         // compare user password with stored hash
-        const authenticated = await bcrypt.compare(password, user.password)
-        return authenticated
+        const authenticated = await bcrypt.compare(password, actualUser.password)
+        console.log(authenticated)
+        console.log(username)
+        // if user is authenticated (credentials are correct), compares username passed to that of username found via id passed (username is correct)
+        if(authenticated && username == actualUser.username) {
+            return true
+        }
+        if(authenticated && username != actualUser.username){
+            return res.status(403).send('Forbidden')
+        }
     }
-    return false
+    // if user doesn't exist
+    return res.status(401).send('Unauthorized')
 }
 
 // function to check if server is healthy
 const getStatus = (req,res) => {
-    sequelize.sequelize
+    sequelize
   .authenticate()
   .then(() => {
-    res.send('Connection has been established successfully.');
+    res.send('Server healthy')
   })
   .catch(err => {
-    res.send('Unable to connect to the database:', err);
+    res.send('Server unhealthy', err)
   })
 }
 

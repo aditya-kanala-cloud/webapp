@@ -35,7 +35,7 @@ db.users = require('./userModel')(sequelize, DataTypes)
 
 db.sequelize.sync({ force: false })
 .then(() => {
-    console.log('yes, table exists')
+    console.log('yes re-sync done!')
 })
 
 module.exports = db
