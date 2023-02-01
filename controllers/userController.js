@@ -76,6 +76,9 @@ const getUser = async (req, res) => {
 
 // PUT route to update user details
 const updateUser = async (req, res) => {
+    if(Object.keys(req.body).length != 3){
+        return res.status(400).send('Bad request');
+        }
     if(!req.body.first_name || !req.body.last_name || !req.body.password){
         return res.status(400).send('Bad request')
     }
