@@ -78,6 +78,5 @@ PUT /v1/user/{userId}
 }
 ```
 
-Developer - Maruti Mohit Rayalacheruvu <br>
-NUID - 002109594 </br>
-Email - rayalacheruvu.m@northeastern.edu
+Developer - Aditya Kanala<br>
+NUID - 002914764 </br>
