@@ -249,7 +249,7 @@ async function authenticateAddProduct(req) {
             return true
         }
     }
-    // if user doesn't exist or unauthenticated
+    // if user does not exist or is not unauthenticated
     return false
 }
 
