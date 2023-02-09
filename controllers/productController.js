@@ -181,7 +181,7 @@ const patchProduct = async(req, res) => {
                 }
             }
 
-            if(quantity && (typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1 != 1)){
+            if(quantity && (typeof quantity === 'string' || quantity < 0 || quantity > 100)){
                 return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
             }
 
