@@ -1,6 +1,7 @@
 const db = require('../models')
 const bcrypt = require('bcrypt')
 const { sequelize }  = require('../models/index')
+const moment = require('moment')
 const User = db.users
 
 // POST route to add a new user to database
@@ -20,8 +21,7 @@ const addUser = async (req, res) => {
     var last_name = req.body.last_name
     var username = req.body.username
     var password = req.body.password
-    var dateObj = new Date()
-    var date = dateObj.toJSON()
+    var date = moment().tz("America/New_York").format('YYYY-MM-DDTHH:mm:ss.sssZ')
 
     // regex to check for valid username (email)
     var usernameCheck = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -76,9 +76,6 @@ const getUser = async (req, res) => {
 
 // PUT route to update user details
 const updateUser = async (req, res) => {
-    if(Object.keys(req.body).length != 3){
-        return res.status(400).send('Bad request');
-        }
     if(!req.body.first_name || !req.body.last_name || !req.body.password){
         return res.status(400).send('Bad request')
     }
@@ -88,7 +85,7 @@ const updateUser = async (req, res) => {
     }
     
     // attempt to update any other field should return 400 Bad Request HTTP response code
-    if(!req.body.username && !req.body.account_created && !req.body.account_updated)
+    if(!req.body.username && !req.body.account_created && !req.body.account_updated && Object.keys(req.body).length === 3)
     {
         // checks if user is authenticated (valid credentials)
         const authenticated = await authenticate(req, res)
@@ -99,7 +96,7 @@ const updateUser = async (req, res) => {
             const hash = await bcrypt.hash(password, 10)
 
             // update user
-            const user = await User.update({first_name: req.body.first_name, last_name: req.body.last_name, password: hash, account_updated: new Date().toJSON()}, {where: { id: req.params.id }})
+            const user = await User.update({first_name: req.body.first_name, last_name: req.body.last_name, password: hash, account_updated: moment().tz("America/New_York").format('YYYY-MM-DDTHH:mm:ss.sssZ')}, {where: { id: req.params.id }})
             // if details updated successfully
             if(user == 1){
                 return res.status(204).send(user)
@@ -125,7 +122,7 @@ async function authenticate (req, res) {
 
     if(givenUser && actualUser){
         // compare user password with stored hash
-        const authenticated = await bcrypt.compare(password, actualUser.password)
+        const authenticated = await bcrypt.compare(password, givenUser.password)
         console.log(authenticated)
         console.log(username)
         // if user is authenticated (credentials are correct), compares username passed to that of username found via id passed (username is correct)
