@@ -1,6 +1,7 @@
 const dbConfig = require('../config/dbConfig')
 const { Sequelize, DataTypes } = require('sequelize')
 
+// instantiating sequelize object
 const sequelize = new Sequelize(
     dbConfig.DB,
     dbConfig.USER,
@@ -28,10 +29,11 @@ sequelize.authenticate()
 
 const db = {}
 
-db.sequelize = Sequelize
-db.sequelize = sequelize
+db.sequelize = Sequelize // constructor
+db.sequelize = sequelize // object
 
 db.users = require('./userModel')(sequelize, DataTypes)
+db.products = require('./productModel')(sequelize, DataTypes)
 
 db.sequelize.sync({ force: false })
 .then(() => {

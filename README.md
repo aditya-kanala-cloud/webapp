@@ -1,6 +1,6 @@
 ## CSYE6225- Network Structures and Cloud Computing
 
-## Assignment 1: Project description
+## Assignment 2: Project description
 
 Create a web application using a technology stack that meets Cloud-Native Web Application Requirements.
 
@@ -19,9 +19,10 @@ Packages required to run:
 - Jest
 - Supertest
 - Bcrypt
-
+- Moment
+  
 ```
-npm i --save express dotenv nodemon pg pg-hstore sequelize cors chai mocha spec jest supertest bcrypt
+npm i --save express dotenv nodemon pg pg-hstore sequelize cors chai mocha spec jest supertest bcrypt moment
 ```
 
 ## Prerequisites for building and deploying application locally:
@@ -39,8 +40,10 @@ npm test
 
 ## Endpoint URLs
 
+### Users
+
 ```javascript
-// 1. POST route to add a new user to database
+// 1. GET route to check server health
 GET /healthz
 
 // 2. GET route to retrieve user details
@@ -53,6 +56,27 @@ POST /v1/user
 PUT /v1/user/{userId}
 ```
 
+### Products
+
+```javascript
+// 1. POST route to check server health
+GET /v1/product
+
+// 2. GET route to retrieve product details
+GET /v1/product/{productId}
+
+// 3. PUT route to update product details
+GET /v1/product/{productId}
+
+// 4. PATCH route to update product details
+GET /v1/product/{productId}
+
+// 5. DELETE route to delete user details
+PUT /v1/product/{productId}
+```
+
+
+## Users Schema
 ### Sample JSON Request for POST
 
 
@@ -64,7 +88,6 @@ PUT /v1/user/{userId}
   "password": "password"
 }
 ```
-
 
 ### Sample JSON Response for GET
 ```json
@@ -78,5 +101,32 @@ PUT /v1/user/{userId}
 }
 ```
 
-Developer - Aditya Kanala<br>
+## Products Schema
+### Sample JSON Request for POST
+```json
+{
+  "name": "name",
+  "description": "desc",
+  "sku": "skew",
+  "manufacturer": "manuf",
+  "quantity": 10
+}
+```
+
+### Sample JSON Response for GET
+```json
+{
+  "id": 1,
+  "name": "name",
+  "description": "desc",
+  "sku": "skew",
+  "manufacturer": "manuf",
+  "quantity": 1,
+  "date_added": "2016-08-29T09:12:33.001Z",
+  "date_last_updated": "2016-09-29T09:12:33.001Z",
+  "owner_user_id": 1
+}
+```
+
+Developer - Aditya Kanala <br>
 NUID - 002914764 </br>
