@@ -5,7 +5,6 @@ const User = db.users
 const Product = db.products
 
 const bodyAllowedList = new Set (['name', 'description', 'sku', 'manufacturer', 'quantity'])
-var date = moment().tz("America/New_York").format('YYYY-MM-DDTHH:mm:ss.sssZ')
 
 // POST route to add a new product to database
 const addProduct = async(req, res) => {
@@ -35,6 +34,8 @@ const addProduct = async(req, res) => {
 
         // retrieve username of user
         var username = Buffer.from(req.get('Authorization').split(' ')[1], 'base64').toString().split(':')[0]
+
+        var date = moment().tz("America/New_York").format('YYYY-MM-DDTHH:mm:ss.sssZ')
 
         // retrieves attribute values from request body
         var name = req.body.name
@@ -104,6 +105,8 @@ const updateProduct = async(req, res) => {
         if(Object.keys(req.body).length === 0){
         return res.status(400).send('Request Body is empty') // request body is empty
         }
+       
+        var date = moment().tz("America/New_York").format('YYYY-MM-DDTHH:mm:ss.sssZ')
 
         // retrieves attribute values from request body
         var name = req.body.name
@@ -158,6 +161,8 @@ const patchProduct = async(req, res) => {
             return res.status(400).json('unexpected parameter in  body');
             }
         }
+
+        var date = moment().tz("America/New_York").format('YYYY-MM-DDTHH:mm:ss.sssZ')
 
         // retrieves attribute values from request body
         var name = req.body.name
