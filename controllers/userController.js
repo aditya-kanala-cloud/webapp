@@ -8,12 +8,12 @@ const User = db.users
 const addUser = async (req, res) => {
     // checks if request body exists, if not returns a bad request
     if(Object.keys(req.body).length === 0){
-        return res.status(400).send('Bad request') // request body is empty
+        return res.status(400).send('Request Body is empty') // request body is empty
     }
 
     // if any of the required fields are empty, return a bad request
     if(!req.body.first_name || !req.body.last_name || !req.body.username || !req.body.password){
-        return res.status(400).send('Bad request') // required fields are missing
+        return res.status(400).send('Required fields are empty') // required fields are missing
     }
 
     // retrieves attribute values from request body

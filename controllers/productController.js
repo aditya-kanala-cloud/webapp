@@ -19,12 +19,12 @@ const addProduct = async(req, res) => {
     if(authenticated == true){
         // checks if request body exists, if not returns a bad request
         if(Object.keys(req.body).length === 0){
-            return res.status(400).send('Bad request!') // request body is empty
+            return res.status(400).send('Request Body is Empty') // request body is empty
         }
 
         // if any of the required fields are empty or read only fields are entered, return a bad request
         if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || !req.body.quantity || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
-            return res.status(400).send('Bad request!!!') // required fields are missing / read only fields entered
+            return res.status(400).send('Required fields are empty or read only fields are entered') // required fields are missing / read only fields entered
         }
 
         for (const prop in req.body) {
@@ -45,7 +45,7 @@ const addProduct = async(req, res) => {
         var owner_user_id = (await User.findOne({where: { username: username }})).id
 
         if(typeof quantity === 'string' || quantity < 0 || quantity > 100){
-            return res.status(400).send('Bad request') // quantity is entered incorrectly
+            return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
         }
     
         var checkIfExists = await Product.findOne({where: { sku: sku }})
@@ -69,7 +69,7 @@ const addProduct = async(req, res) => {
     }
 
     if(authenticated == false){
-        return res.status(401).send('Unauthorized') // user not authenticated
+        return res.status(401).send('User not authenticated') // user not authenticated
     }
 
     return res.status(400).send('Bad request') // above checks fail
@@ -86,23 +86,23 @@ const updateProduct = async(req, res) => {
     if(authenticated == true){
         // checks if request body exists, if not returns a bad request
         if(Object.keys(req.body).length === 0){
-            return res.status(400).send('Bad request') // request body is empty
+            return res.status(400).send('Request Body is empty') // request body is empty
         }
 
         // if any of the required fields are empty or read only fields are entered, return a bad request
         if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || !req.body.quantity || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
-            return res.status(400).send('Bad request') // required fields are missing / read only fields entered
+            return res.status(400).send('Required fields are empty or read only fields are given') // required fields are missing / read only fields entered
         }
 
         for (const prop in req.body) {
         if(req.body.hasOwnProperty(prop) && !bodyAllowedList.has(prop)) {
-            return res.status(400).json('unexpected parameter in  body');
+            return res.status(400).json('unexpected parameter in body');
             }
         }
 
         // checks if request body exists, if not returns a bad request
         if(Object.keys(req.body).length === 0){
-        return res.status(400).send('Bad request') // request body is empty
+        return res.status(400).send('Request Body is empty') // request body is empty
         }
 
         // retrieves attribute values from request body
@@ -113,7 +113,7 @@ const updateProduct = async(req, res) => {
         var quantity = req.body.quantity
 
         if(typeof quantity === 'string' || quantity < 0 || quantity > 100){
-            return res.status(400).send('Bad request') // quantity is entered incorrectly
+            return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
         }
       
         var checkIfExists = await Product.findOne({where: { id: req.params.id }})
@@ -145,12 +145,12 @@ const patchProduct = async(req, res) => {
     if(authenticated == true){
         // checks if request body exists, if not returns a bad request
         if(Object.keys(req.body).length === 0){
-            return res.status(400).send('Bad request') // request body is empty
+            return res.status(400).send('Request Body is empty') // request body is empty
         }
 
         // if trying to update non-updatable fields
         if(req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
-            return res.status(400).send('Bad request') // cannot update these fields
+            return res.status(400).send('Trying to update auto generated fields') // cannot update these fields
         }
 
         for (const prop in req.body) {
@@ -182,7 +182,7 @@ const patchProduct = async(req, res) => {
             }
 
             if(quantity && (typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1 != 1)){
-                return res.status(400).send('Bad request') // quantity is entered incorrectly
+                return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
             }
 
             if(sku){
