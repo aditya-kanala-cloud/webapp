@@ -10,6 +10,7 @@ var date = moment().tz("America/New_York").format('YYYY-MM-DDTHH:mm:ss.sssZ')
 // POST route to add a new product to database
 const addProduct = async(req, res) => {
     // if no authorization, return unauthorized
+
     if(!req.get('Authorization')){
         return res.status(401).send('Unauthorized')
     }
@@ -18,17 +19,17 @@ const addProduct = async(req, res) => {
     if(authenticated == true){
         // checks if request body exists, if not returns a bad request
         if(Object.keys(req.body).length === 0){
-            return res.status(400).send('Bad request') // request body is empty
+            return res.status(400).send('Bad request!') // request body is empty
         }
 
         // if any of the required fields are empty or read only fields are entered, return a bad request
         if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || !req.body.quantity || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
-            return res.status(400).send('Bad request') // required fields are missing / read only fields entered
+            return res.status(400).send('Bad request!!!') // required fields are missing / read only fields entered
         }
 
         for (const prop in req.body) {
         if(req.body.hasOwnProperty(prop) && !bodyAllowedList.has(prop)) {
-            return res.status(400).json('Bad request');
+            return res.status(400).json('Bad request!!');
             }
         }
 
@@ -43,7 +44,7 @@ const addProduct = async(req, res) => {
         var quantity = req.body.quantity
         var owner_user_id = (await User.findOne({where: { username: username }})).id
 
-        if(typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1 != 1){
+        if(typeof quantity === 'string' || quantity < 0 || quantity > 100){
             return res.status(400).send('Bad request') // quantity is entered incorrectly
         }
     
@@ -111,7 +112,7 @@ const updateProduct = async(req, res) => {
         var manufacturer = req.body.manufacturer
         var quantity = req.body.quantity
 
-        if(typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1 != 1){
+        if(typeof quantity === 'string' || quantity < 0 || quantity > 100){
             return res.status(400).send('Bad request') // quantity is entered incorrectly
         }
       
