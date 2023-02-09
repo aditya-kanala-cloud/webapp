@@ -142,10 +142,10 @@ const getStatus = (req,res) => {
     sequelize
   .authenticate()
   .then(() => {
-    res.send('Server healthy')
+    res.send('')
   })
   .catch(err => {
-    res.send('Server unhealthy', err)
+    res.send('', err)
   })
 }
 
