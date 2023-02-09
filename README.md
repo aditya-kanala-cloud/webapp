@@ -1,6 +1,6 @@
 ## CSYE6225- Network Structures and Cloud Computing
 
-## Assignment 1 - 2: Project description
+## Assignment 2: Project description
 
 Create a web application using a technology stack that meets Cloud-Native Web Application Requirements.
 
