@@ -44,6 +44,7 @@ sudo -u postgres psql -U postgres -d postgres -c "create database test;"
 sudo yum remove -y expect
 
 pwd
+
 npm install -g npm@9.5.1
 unzip webapp.zip -d webapp-main
 

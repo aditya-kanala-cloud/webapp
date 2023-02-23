@@ -37,11 +37,11 @@ build {
   sources = ["source.amazon-ebs.my-ami"]
 
   provisioner "file" {
-    source      = "../webapp.zip"
+    source      = "webapp.zip"
     destination = "webapp.zip"
   }
 
   provisioner "shell" {
-    script = "user_data.sh"
+    script = "packer/user_data.sh"
   }
 }
