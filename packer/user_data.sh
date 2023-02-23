@@ -44,19 +44,15 @@ sudo -u postgres psql -U postgres -d postgres -c "create database test;"
 sudo yum remove -y expect
 
 pwd
-
-unzip webapp.zip
+npm install -g npm@9.5.1
+unzip webapp.zip -d webapp-main
 
 rm webapp.zip
-
-# sudo chmod 755 webapp-main
-
-
-npm install -g npm@9.5.1
 
 which node
 cd webapp-main
 npm i --save
+sudo chmod 755 ../webapp-main
 sudo cat >> ~/.bashrc <<'EOF'
 export DB_HOST="127.0.0.1"
 export DB_USER="postgres"
