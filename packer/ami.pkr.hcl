@@ -24,7 +24,7 @@ source "amazon-ebs" "my-ami" {
   instance_type        = "t2.micro"
   region               = "${var.aws_region}"
   ssh_username         = "${var.ssh_username}"
-  ami_users            = ["111066921689","878965051243"]
+  ami_users            = ["313023370759","770241558482"]
   launch_block_device_mappings {
     delete_on_termination = true
     device_name           = "/dev/xvda"
