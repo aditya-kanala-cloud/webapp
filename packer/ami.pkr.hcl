@@ -44,4 +44,3 @@ build {
   provisioner "shell" {
     script = "packer/user_data.sh"
   }
-}
