@@ -75,6 +75,16 @@ GET /v1/product/{productId}
 PUT /v1/product/{productId}
 ```
 
+``` JavaScript
+//POST Method URL for images
+/v1/product/{product_id}/image
+//GET Method URL for List of all images
+/v1/product/{product_id}/image
+//GET Method URL for a single image
+/v1/product/{product_id}/image/{image_id}
+//DELETE Method URL for image
+/v1/product/{product_id}/image/{image_id}
+```
 
 ## Users Schema
 ### Sample JSON Request for POST
@@ -128,5 +138,17 @@ PUT /v1/product/{productId}
 }
 ```
 
+
+## Images Schema
+## Sample JSON Request for GET Method
+``` json
+{
+    "image_id": 1,
+    "product_id": 1,
+    "file_name": "speaker_series_2023-03-02T02:08:54.5454.jpg",
+    "date_created": "2023-03-02T02:08:55.5555",
+    "s3_bucket_path": "https://example-bucket.s3.amazonaws.com/example.jpg"
+}
+```
 Developer - Aditya Kanala <br>
 NUID - 002914764 </br>
