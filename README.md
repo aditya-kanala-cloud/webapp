@@ -75,6 +75,7 @@ GET /v1/product/{productId}
 PUT /v1/product/{productId}
 ```
 
+### Images
 ``` JavaScript
 //POST Method URL for images
 /v1/product/{product_id}/image
@@ -140,7 +141,7 @@ PUT /v1/product/{productId}
 
 
 ## Images Schema
-## Sample JSON Request for GET Method
+### Sample JSON Request for GET Method
 ``` json
 {
     "image_id": 1,
