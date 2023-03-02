@@ -24,3 +24,17 @@ describe('Authentication Test for Post', function() {
         });
     });
 })
+
+describe('Authentication Tests', function() {
+    describe('Successes', function() {
+        it('Return the image for post if auth does not exist', function(done) {
+            
+            request(app).post('/v1/product/1/image').send({}).end(function(err, res) {
+                
+                expect(res.statusCode).to.be.equal(401);                
+                
+                done();
+            });
+        });
+    })
+})
