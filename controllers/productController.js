@@ -45,7 +45,7 @@ const addProduct = async(req, res) => {
         var quantity = req.body.quantity
         var owner_user_id = (await User.findOne({where: { username: username }})).id
 
-        if(typeof quantity === 'string' || quantity < 0 || quantity > 100){
+        if(typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1!= 0 ){
             return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
         }
     
@@ -115,7 +115,7 @@ const updateProduct = async(req, res) => {
         var manufacturer = req.body.manufacturer
         var quantity = req.body.quantity
 
-        if(typeof quantity === 'string' || quantity < 0 || quantity > 100){
+        if(typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1!= 0 ){
             return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
         }
       
@@ -186,7 +186,7 @@ const patchProduct = async(req, res) => {
                 }
             }
 
-            if(quantity && (typeof quantity === 'string' || quantity < 0 || quantity > 100)){
+            if(quantity && (typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1!= 0 )){
                 return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
             }
 
