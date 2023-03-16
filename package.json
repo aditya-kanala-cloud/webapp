@@ -1,7 +1,7 @@
 {
   "name": "webapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "## Assignment 2: Project description",
   "main": "index.js",
   "scripts": {
     "test": "mocha test.spec.js",
@@ -26,5 +26,14 @@
     "sequelize": "^6.28.0",
     "spec": "^1.0.1",
     "supertest": "^6.3.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aditya-kanala/webappremote.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aditya-kanala/webappremote/issues"
+  },
+  "homepage": "https://github.com/aditya-kanala/webappremote#readme"
 }

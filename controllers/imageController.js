@@ -66,13 +66,13 @@ const getImage = async (req, res) => {
 
     if(!isNaN(authenticated)){
 
-        let image = await Images.findOne({where: { image_id: req.params.image }})
+        let image = await Images.findOne({where: {product_id: req.params.id, image_id: req.params.image }})//edited product_id
 
         //check if product exist
         if(image != null){
             return res.status(200).send(image)
         }else{
-            return res.status(404).send("Image Not Found")
+            return res.status(403).send("Forbidden from accessing other images")
         }
     }
 }
@@ -112,7 +112,7 @@ const deleteImage = async (req,res) => {
     if(!isNaN(authenticated)){
 
         // retrieve product data based on parameter id
-        let image = await Images.findOne({where: { image_id: req.params.image }})
+        let image = await Images.findOne({where: {product_id: req.params.id, image_id: req.params.image }}) //edited product_id
 
         //check if product exist and delete
         if(image != null){
@@ -122,7 +122,7 @@ const deleteImage = async (req,res) => {
             await Images.destroy({where: { image_id: req.params.image }})
             return res.status(204).send()
         }else{
-            return res.status(404).send("Image Not Found")
+            return res.status(403).send("Forbidden from accessing other images")
         }
     }
 
