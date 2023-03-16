@@ -22,7 +22,7 @@ const addProduct = async(req, res) => {
         }
 
         // if any of the required fields are empty or read only fields are entered, return a bad request
-        if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || !req.body.quantity || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
+        if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || req.body.quantity==null || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
             return res.status(400).send('Required fields are empty or read only fields are entered') // required fields are missing / read only fields entered
         }
 
@@ -91,7 +91,7 @@ const updateProduct = async(req, res) => {
         }
 
         // if any of the required fields are empty or read only fields are entered, return a bad request
-        if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || !req.body.quantity || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
+        if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || req.body.quantity==null || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
             return res.status(400).send('Required fields are empty or read only fields are given') // required fields are missing / read only fields entered
         }
 
