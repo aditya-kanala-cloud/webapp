@@ -248,7 +248,7 @@ const deleteProduct = async (req, res) => {
     }
 
     if(await Product.findOne({where: { id: req.params.id }}) == null){
-        logger.info(id+" ID not present");
+        logger.info("ID not present");
         return res.status(404).send('Not found') 
     }
 
