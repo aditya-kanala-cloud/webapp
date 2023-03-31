@@ -5,11 +5,18 @@ const User = db.users
 const Product = db.products
 
 const bodyAllowedList = new Set (['name', 'description', 'sku', 'manufacturer', 'quantity'])
+const StatsD = require('node-statsd')
+const logger = require('../logger')
+var client = new StatsD({
+    host: "localhost",
+    port: "8125"
+});
 
 // POST route to add a new product to database
 const addProduct = async(req, res) => {
+    client.increment('add_product')
     // if no authorization, return unauthorized
-
+    logger.info("Cannot add product because of wrong credentials");
     if(!req.get('Authorization')){
         return res.status(401).send('Unauthorized')
     }
@@ -17,11 +24,13 @@ const addProduct = async(req, res) => {
     const authenticated = await authenticateAddProduct(req)
     if(authenticated == true){
         // checks if request body exists, if not returns a bad request
+        logger.info("JSON request body is empty to add a product");
         if(Object.keys(req.body).length === 0){
             return res.status(400).send('Request Body is Empty') // request body is empty
         }
 
         // if any of the required fields are empty or read only fields are entered, return a bad request
+        logger.info("Unable to add product because of missing or invalid fields");
         if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || req.body.quantity==null || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
             return res.status(400).send('Required fields are empty or read only fields are entered') // required fields are missing / read only fields entered
         }
@@ -46,6 +55,7 @@ const addProduct = async(req, res) => {
         var owner_user_id = (await User.findOne({where: { username: username }})).id
 
         if(typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1!= 0 ){
+            logger.info("Entered quantity is in wrong format");
             return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
         }
     
@@ -70,6 +80,7 @@ const addProduct = async(req, res) => {
     }
 
     if(authenticated == false){
+        logger.info("Wrong credentials of the user provided");
         return res.status(401).send('User not authenticated') // user not authenticated
     }
 
@@ -78,7 +89,9 @@ const addProduct = async(req, res) => {
 
 // PUT route to add a update product to database
 const updateProduct = async(req, res) => {
+    client.increment("update_product")
     // if no authorization, return unauthorized
+    logger.info("Wrong credentials of the user provided");
     if(!req.get('Authorization')){
         return res.status(401).send('Unauthorized')
     }
@@ -87,11 +100,13 @@ const updateProduct = async(req, res) => {
     if(authenticated == true){
         // checks if request body exists, if not returns a bad request
         if(Object.keys(req.body).length === 0){
+            logger.info("JSON request body is empty to update the product");
             return res.status(400).send('Request Body is empty') // request body is empty
         }
 
         // if any of the required fields are empty or read only fields are entered, return a bad request
         if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || req.body.quantity==null || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
+            logger.info("Required fields are empty or invalid to update the product");
             return res.status(400).send('Required fields are empty or read only fields are given') // required fields are missing / read only fields entered
         }
 
@@ -103,6 +118,7 @@ const updateProduct = async(req, res) => {
 
         // checks if request body exists, if not returns a bad request
         if(Object.keys(req.body).length === 0){
+        logger.info("JSON request body is empty to update the product");
         return res.status(400).send('Request Body is empty') // request body is empty
         }
        
@@ -116,6 +132,7 @@ const updateProduct = async(req, res) => {
         var quantity = req.body.quantity
 
         if(typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1!= 0 ){
+            logger.info("Enter quantity is invalid");
             return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
         }
       
@@ -125,11 +142,13 @@ const updateProduct = async(req, res) => {
             if(checkIfExists.sku != req.body.sku){
                 var checkIfExists = await Product.findOne({where: { sku: req.body.sku }})
                 if(checkIfExists){
+                    logger.info("New sku is not allowed during update");
                     return res.status(400).send('Bad request')
                 }
             }
 
             await Product.update({name: name, description: description, sku: sku, manufacturer: manufacturer, quantity: quantity, date_last_updated: date}, {where: { id: req.params.id }})
+            logger.info("Update Successfule, id : "+req.params.id);
             return res.status(204).send()
         }
 
@@ -139,8 +158,10 @@ const updateProduct = async(req, res) => {
 
 // PATCH route to add a update product to database
 const patchProduct = async(req, res) => {
+    client.increment("product_patch")
     // if no authorization, return unauthorized
     if(!req.get('Authorization')){
+        logger.info("Bad credentials");
         return res.status(401).send('Unauthorized')
     }
 
@@ -148,17 +169,20 @@ const patchProduct = async(req, res) => {
     if(authenticated == true){
         // checks if request body exists, if not returns a bad request
         if(Object.keys(req.body).length === 0){
+            logger.info("JSON requested body is empty");
             return res.status(400).send('Request Body is empty') // request body is empty
         }
 
         // if trying to update non-updatable fields
         if(req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
+            logger.info("Cannot update the system auto generated fields");
             return res.status(400).send('Trying to update auto generated fields') // cannot update these fields
         }
 
         for (const prop in req.body) {
         if(req.body.hasOwnProperty(prop) && !bodyAllowedList.has(prop)) {
-            return res.status(400).json('unexpected parameter in  body');
+            logger.info("New property in the JSON body");
+            return res.status(400).json('unexpected parameter in body');
             }
         }
 
@@ -182,11 +206,13 @@ const patchProduct = async(req, res) => {
 
             if(req.body.owner_user_id){
                 if(checkIfExists.owner_user_id != req.body.owner_user_id){
+                    logger.info(checkIfExists.body.owner_user_id+" does not exist");
                     return res.status(400)
                 }
             }
 
             if(quantity && (typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1!= 0 )){
+                logger.info("Quantity entered in invalid");
                 return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
             }
 
@@ -194,12 +220,14 @@ const patchProduct = async(req, res) => {
                 if(checkIfExists.sku != req.body.sku){
                     var checkIfExists = await Product.findOne({where: { sku: req.body.sku }})
                     if(checkIfExists){
+                        logger.info(checkIfExists.sku+" does not exist");
                         return res.status(400).send('Bad request')
                     }
                 }
             }
 
             await Product.update({name: name, description: description, sku: sku, manufacturer: manufacturer, quantity: quantity, date_last_updated: date}, {where: { id: req.params.id }})
+            logger.info("Product updated successfully");
             return res.status(204).send()
         }
 
@@ -209,12 +237,15 @@ const patchProduct = async(req, res) => {
 
 // DELETE route to delete product 
 const deleteProduct = async (req, res) => {
+    client.increment('delete_product')
     // if no authorization, return unauthorized
     if(!req.get('Authorization')){
+        logger.info("User is not authorized to delete");
         return res.status(401).send('Unauthorized')
     }
 
     if(await Product.findOne({where: { id: req.params.id }}) == null){
+        logger.info(id+" ID not present");
         return res.status(404).send('Not found') 
     }
 
@@ -224,6 +255,7 @@ const deleteProduct = async (req, res) => {
         let product = await Product.findOne({where: { id: req.params.id }})
         if(product != null){
             await Product.destroy({where: { id: req.params.id }})
+            logger.info("Product with ID "+req.params.id+" deleted");
             return res.status(204).send()
         }
     }
@@ -231,10 +263,13 @@ const deleteProduct = async (req, res) => {
 
 // GET route to retrieve product details
 const getProduct = async (req, res) => {
+    client.increment('get_product')
     let product = await Product.findOne({where: { id: req.params.id }})
     if(product != null){
+        logger.info("Product with ID "+req.params.id+" retrieved successfully");
         return res.status(200).send(product)
     }
+    logger.info("Product not found");
     return res.status(404).send('Not found')
 }
 

@@ -19,6 +19,7 @@ const addUser = async (req, res) => {
     }
 
     // if any of the required fields are empty, return a bad request
+    logger.info("Required User fields are empty while adding new user");
     if(!req.body.first_name || !req.body.last_name || !req.body.username || !req.body.password){
         return res.status(400).send('Required fields are empty') // required fields are missing
     }
@@ -54,18 +55,22 @@ const addUser = async (req, res) => {
 
         // finds newly created user to fetch info
         let response = await User.findOne({where: { username: username },
-            attributes: { exclude: [ 'password' ]}})     
+            attributes: { exclude: [ 'password' ]}})
+        logger.info("User Created successfully, user_id : "+response.id);
         return res.status(201).send(response)
     }
 
     // if above checks fail, a bad request is returned
+    logger.info("Failed to fetch new user data");
     return res.status(400).send('Bad request')
 }
 
 // GET route to retrieve user details
 const getUser = async (req, res) => {
+    client.increment('get_user')
     // checks for authorization header
     if(!req.get('Authorization')){
+        logger.info("Unable to fetch user because of unauthorized access");
         return res.status(401).send('Unauthorized')
     }
 
@@ -73,6 +78,7 @@ const getUser = async (req, res) => {
     const authenticated = await authenticate(req, res)
     if(authenticated == true){
         // retrieve user details on successful authentication
+        logger.info("Get user details upon successful authentication, user_id : "+req.params.id);
         let user = await User.findOne({where: { id: req.params.id },
             attributes: { exclude: [ 'password' ]}})
         if(user != null){
@@ -83,15 +89,19 @@ const getUser = async (req, res) => {
 
 // PUT route to update user details
 const updateUser = async (req, res) => {
+    client.increment('update_user')
+    logger.info("Unable to update because of invalid fields");
     if(!req.body.first_name || !req.body.last_name || !req.body.password){
         return res.status(400).send('Bad request')
     }
     
     if(!req.get('Authorization')){
+        logger.info("Cannot update because of wrong credentials")
         return res.status(401).send('Unauthorized')
     }
     
     // attempt to update any other field should return 400 Bad Request HTTP response code
+    logger.info("User cannot update the username, account created & updated")
     if(!req.body.username && !req.body.account_created && !req.body.account_updated && Object.keys(req.body).length === 3)
     {
         // checks if user is authenticated (valid credentials)
