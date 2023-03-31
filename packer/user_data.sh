@@ -6,7 +6,11 @@ sudo yum update
 
 sudo yum upgrade
 
+sudo yum install -y gcc-c++ make
 
+curl -sL https://rpm.nodesource.com/setup_16.x | sudo -E bash -
+
+sudo yum install -y nodejs
 source ~/.bashrc
 
 nvm install 16
