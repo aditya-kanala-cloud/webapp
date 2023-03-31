@@ -12,6 +12,7 @@ var client = new StatsD({
     port: "8125"
 });
 
+s3 = new AWS.S3({region: process.env.AWS_REGION })
 // POST route to add a new product to database
 const addProduct = async(req, res) => {
     client.increment('add_product')
@@ -255,6 +256,41 @@ const deleteProduct = async (req, res) => {
         let product = await Product.findOne({where: { id: req.params.id }})
         if(product != null){
             await Product.destroy({where: { id: req.params.id }})
+
+            //code to delete image after product delete
+            const prefix = req.params.id + '/'
+
+            const deleteObjectsParams = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Delete: {
+                    Objects: []
+                }
+            }
+
+            const listObjectsParams = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Prefix: prefix
+            }
+
+            s3.listObjectsV2(listObjectsParams, function(err, data) {
+                if (err) {
+                    console.log(err, err.stack);
+                    return;
+                }
+                deleteObjectsParams.Delete.Objects = data.Contents.map(function(content) {
+                    return {Key: content.Key};
+                })
+                s3.deleteObjects(deleteObjectsParams, function(err, data) {
+                    if (err) {
+                        //logger.info(`[deleteProduct] from [productController]: Image deletion from S3 bucket unsuccessful for Product ID [${req.params.id}]`)
+                        console.log(err, err.stack);
+                    } else {
+                        //logger.info(`[deleteProduct] from [productController]: Image deletion from S3 bucket successful for Product ID [${req.params.id}]`)
+                        console.log("Deleted objects:", data.Deleted);
+                    }
+                })
+            })
+
             logger.info("Product with ID "+req.params.id+" deleted");
             return res.status(204).send()
         }
