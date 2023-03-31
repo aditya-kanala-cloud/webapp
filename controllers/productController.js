@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const moment = require('moment')
 const User = db.users
 const Product = db.products
-
+const AWS = require ('aws-sdk')
 const bodyAllowedList = new Set (['name', 'description', 'sku', 'manufacturer', 'quantity'])
 const StatsD = require('node-statsd')
 const logger = require('../logger')

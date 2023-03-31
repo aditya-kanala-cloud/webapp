@@ -6,7 +6,7 @@ const Images = db.images
 const User = db.users
 const Products = db.products
 
-const {uploadFile, deleteFile} = require('../s3')
+const {uploadFile, deleteFile}  = require('../s3')
 const StatsD = require('node-statsd')
 const logger = require('../logger')
 var client = new StatsD({
