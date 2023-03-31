@@ -17,22 +17,23 @@ s3 = new AWS.S3({region: process.env.AWS_REGION })
 const addProduct = async(req, res) => {
     client.increment('add_product')
     // if no authorization, return unauthorized
-    logger.info("Cannot add product because of wrong credentials");
     if(!req.get('Authorization')){
+        logger.info("Cannot add product because of wrong credentials");
         return res.status(401).send('Unauthorized')
     }
 
     const authenticated = await authenticateAddProduct(req)
     if(authenticated == true){
         // checks if request body exists, if not returns a bad request
-        logger.info("JSON request body is empty to add a product");
         if(Object.keys(req.body).length === 0){
+            logger.info("JSON request body is empty to add a product");
             return res.status(400).send('Request Body is Empty') // request body is empty
         }
 
         // if any of the required fields are empty or read only fields are entered, return a bad request
-        logger.info("Unable to add product because of missing or invalid fields");
+
         if(!req.body.name || !req.body.description || !req.body.sku || !req.body.manufacturer || req.body.quantity==null || req.body.id || req.body.date_added || req.body.date_last_updated || req.body.owner_user_id){
+            logger.info("Unable to add product because of missing or invalid fields");
             return res.status(400).send('Required fields are empty or read only fields are entered') // required fields are missing / read only fields entered
         }
 
@@ -92,8 +93,9 @@ const addProduct = async(req, res) => {
 const updateProduct = async(req, res) => {
     client.increment("update_product")
     // if no authorization, return unauthorized
-    logger.info("Wrong credentials of the user provided");
+
     if(!req.get('Authorization')){
+        logger.info("Wrong credentials of the user provided");
         return res.status(401).send('Unauthorized')
     }
 
@@ -305,7 +307,6 @@ const getProduct = async (req, res) => {
         logger.info("Product with ID "+req.params.id+" retrieved successfully");
         return res.status(200).send(product)
     }
-    logger.info("Product not found");
     return res.status(404).send('Not found')
 }
 
