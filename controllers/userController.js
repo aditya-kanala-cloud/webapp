@@ -11,16 +11,16 @@ var client = new StatsD({
 });
 // POST route to add a new user to database
 const addUser = async (req, res) => {
-    logger.info("Adding User");
     client.increment('add_user')
     // checks if request body exists, if not returns a bad request
     if(Object.keys(req.body).length === 0){
+        logger.info("Required JSON body is empty");
         return res.status(400).send('Request Body is empty') // request body is empty
     }
 
     // if any of the required fields are empty, return a bad request
-    logger.info("Required User fields are empty while adding new user");
     if(!req.body.first_name || !req.body.last_name || !req.body.username || !req.body.password){
+        logger.info("Required User fields are empty while adding new user");
         return res.status(400).send('Required fields are empty') // required fields are missing
     }
 
