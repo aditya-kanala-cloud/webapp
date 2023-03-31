@@ -3,10 +3,18 @@ const bcrypt = require('bcrypt')
 const { sequelize }  = require('../models/index')
 const moment = require('moment')
 const User = db.users
+const logger = require('../logger');
+const SDC = require('node-statsd');
+const sdc = new SDC({
+    host: "localhost",
+    port: "8125"
+});
 
 // POST route to add a new user to database
 const addUser = async (req, res) => {
     // checks if request body exists, if not returns a bad request
+    logger.info("Adding user")
+    sdc.increment('Add_user')
     if(Object.keys(req.body).length === 0){
         return res.status(400).send('Request Body is empty') // request body is empty
     }
@@ -142,6 +150,8 @@ const getStatus = (req,res) => {
     sequelize
   .authenticate()
   .then(() => {
+    logger.info("HealthZ")
+    sdc.increment('HealthZ')
     res.send('')
   })
   .catch(err => {

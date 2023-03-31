@@ -6,11 +6,11 @@ sudo yum update
 
 sudo yum upgrade
 
-sudo amazon-linux-extras install epel -y
+sudo yum install -y gcc-c++ make
 
-sudo yum install curl -y
+curl -sL https://rpm.nodesource.com/setup_16.x | sudo -E bash -
 
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+sudo yum install -y nodejs
 
 source ~/.bashrc
 
@@ -37,7 +37,7 @@ Description=webapp
 After=multi-user.target
 [Service]
 EnvironmentFile=/home/ec2-user/webapp-main/.env
-ExecStart=/home/ec2-user/.nvm/versions/node/v16.19.1/bin/node /home/ec2-user/webapp-main/server.js
+ExecStart=/usr/bin/node /home/ec2-user/webapp-main/server.js
 Restart=always
 RestartSec=10
 StandardOutput=syslog
