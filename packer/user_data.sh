@@ -2,9 +2,9 @@
 
 echo "Running the bash script.."
 
-sudo yum update
+sudo yum update -y
 
-sudo yum upgrade
+sudo yum upgrade -y
 
 
 sudo yum install -y gcc-c++ make
@@ -15,17 +15,16 @@ curl -sL https://rpm.nodesource.com/setup_16.x | sudo -E bash -
 sudo yum install -y nodejs
 source ~/.bashrc
 
-nvm install 16
 
 node -v
 
 npm -v
 
-
+which node
 
 pwd
 ls -a
-npm install -g npm@9.5.1
+
 unzip webapp.zip -d webapp-main
 
 rm webapp.zip
