@@ -76,7 +76,8 @@ const addProduct = async(req, res) => {
             }
     
             await Product.create(productInfo)
-            let response = await Product.findOne({where: { sku: sku }})    
+            let response = await Product.findOne({where: { sku: sku }})  
+            logger.info("Product Created Successfully"); //product creation  
             return res.status(201).send(response)
         }
     }

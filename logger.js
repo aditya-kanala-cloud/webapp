@@ -1,4 +1,6 @@
 var winston = require('winston');
+const os = require('os');
+
 
 // define the custom settings for each transport (file, console)
 var options = {
@@ -21,6 +23,7 @@ var options = {
 
 // instantiate a new Winston Logger with the settings defined above
 var logger = new winston.createLogger({
+  format: winston.format.combine( winston.format.timestamp(),     winston.format.json(),     winston.format.printf(info => {       const hostname = os.hostname();       info.hostname = hostname;       return JSON.stringify(info);     }) ),
   transports: [
     new winston.transports.File(options.file), //transports log messages to combined.log file
     new winston.transports.Console(options.console)
