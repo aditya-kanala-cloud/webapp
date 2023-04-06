@@ -57,7 +57,7 @@ const addProduct = async(req, res) => {
         var owner_user_id = (await User.findOne({where: { username: username }})).id
 
         if(typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1!= 0 ){
-            logger.info("Entered quantity is in wrong format");
+            logger.info("Entered quantity is in wrong format for the product");
             return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
         }
     
@@ -83,10 +83,10 @@ const addProduct = async(req, res) => {
     }
 
     if(authenticated == false){
-        logger.info("Wrong credentials of the user provided");
+        logger.info("Wrong credentials of the user provided to add the product");
         return res.status(401).send('User not authenticated') // user not authenticated
     }
-
+    logger.info("Product cannot be created");
     return res.status(400).send('Bad request') // above checks fail
 }
 
@@ -96,7 +96,7 @@ const updateProduct = async(req, res) => {
     // if no authorization, return unauthorized
 
     if(!req.get('Authorization')){
-        logger.info("Wrong credentials of the user provided");
+        logger.info("Wrong credentials of the user provided to add the product");
         return res.status(401).send('Unauthorized')
     }
 
@@ -136,7 +136,7 @@ const updateProduct = async(req, res) => {
         var quantity = req.body.quantity
 
         if(typeof quantity === 'string' || quantity < 0 || quantity > 100 || quantity % 1!= 0 ){
-            logger.info("Enter quantity is invalid");
+            logger.info("Enter quantity is invalid for the product");
             return res.status(400).send('Incorrect quantity entered') // quantity is entered incorrectly
         }
       
@@ -146,16 +146,16 @@ const updateProduct = async(req, res) => {
             if(checkIfExists.sku != req.body.sku){
                 var checkIfExists = await Product.findOne({where: { sku: req.body.sku }})
                 if(checkIfExists){
-                    logger.info("New sku is not allowed during update");
+                    logger.info("New sku is not allowed during update of the product");
                     return res.status(400).send('Bad request')
                 }
             }
 
             await Product.update({name: name, description: description, sku: sku, manufacturer: manufacturer, quantity: quantity, date_last_updated: date}, {where: { id: req.params.id }})
-            logger.info("Update Successfule, id : "+req.params.id);
+            logger.info("Product Update Successful, id : "+req.params.id);
             return res.status(204).send()
         }
-
+        logger.info("Product update failed");
         return res.status(400).send('Bad request')
     }
 }
@@ -234,7 +234,7 @@ const patchProduct = async(req, res) => {
             logger.info("Product updated successfully");
             return res.status(204).send()
         }
-
+        logger.info("Product update failed");
         return res.status(400).send('Bad request')
     }
 }
@@ -357,10 +357,12 @@ async function authenticateUpdateProduct(req, res) {
 
     // if product doesn't exist
     if(!product){
+        logger.info("Product does not exist");
         return res.status(404).send('Not found')
     }
 
     // if user doesn't exist
+    logger.info("User does not exist");
     return res.status(401).send('Unauthorized')
 }
 
